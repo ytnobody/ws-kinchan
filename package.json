@@ -11,7 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@hono/node-server": "^1.2.0",
     "esbuild-register": "^3.5.0",
+    "hono": "^3.9.1",
+    "serve-static": "link:@hono/node-server/serve-static",
     "ulid": "^2.3.0",
     "ws": "^8.14.2"
   },
