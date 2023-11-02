@@ -63,8 +63,8 @@ reset
 ## components
 
 ```mermaid
-graph LR
-[Scoreboard] -- [WebSocket Server]
-[Client] -- [WebSocket Server]
+flowchart TD
+    A[Scoreboard] -->|send:scoreboard| B[WebSocker Server]
+    C[Client Button] -->|send: CODE| B
 
 ```
