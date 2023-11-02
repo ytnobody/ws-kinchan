@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "esbuild-register": "^3.5.0",
+    "ulid": "^2.3.0",
     "ws": "^8.14.2"
   },
   "devDependencies": {
