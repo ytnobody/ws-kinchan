@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+
+  <!--
+
+  欽ちゃんの仮装大賞　パネル再現アプリ WebSocket版
+  Original from: https://kinchan.toriiico.com
+  Arranged by: ytnobody
+
+-->
+
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#157878">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" />
+  <style>
+    html {
+      touch-action: manipulation;
+    }
+
+    .is-center {
+      text-align: center;
+    }
+
+    .is-vertical-center {
+      display: flex;
+      align-items: center;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 160px;
+      height: 720px;
+      margin: auto;
+    }
+
+    .canvas-wrapper canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .is-hide {
+      display: none;
+    }
+  </style>
+  <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+  <!-- Begin Jekyll SEO tag v2.7.1 -->
+  <title>欽ちゃんの仮装大賞 パネル再現ツール | 欽ちゃんの仮装大賞で使われていたパネルをwebアプリのツールとして再現してみました。操作方法は A S D キーでカウントアップ、R
+    キーでリセットできます。ヘルプボタンからスマホ向けのボタンを表示する機能がありますので、スマホユーザーの方はそちらのボタンを利用して楽しんでください。</title>
+  <meta name="generator" content="Jekyll v3.9.0" />
+  <meta property="og:title" content="欽ちゃんの仮装大賞 パネル再現ツール" />
+  <meta property="og:locale" content="en_US" />
+  <meta name="description"
+    content="欽ちゃんの仮装大賞で使われていたパネルをwebアプリのツールとして再現してみました。操作方法は A S D キーでカウントアップ、R キーでリセットできます。ヘルプボタンからスマホ向けのボタンを表示する機能がありますので、スマホユーザーの方はそちらのボタンを利用して楽しんでください。" />
+  <meta property="og:description"
+    content="欽ちゃんの仮装大賞で使われていたパネルをwebアプリのツールとして再現してみました。操作方法は A S D キーでカウントアップ、R キーでリセットできます。ヘルプボタンからスマホ向けのボタンを表示する機能がありますので、スマホユーザーの方はそちらのボタンを利用して楽しんでください。" />
+  <link rel="canonical" href="https://kinchan.toriiico.com/" />
+  <meta property="og:url" content="https://kinchan.toriiico.com/" />
+  <meta property="og:site_name" content="欽ちゃんの仮装大賞 パネル再現ツール" />
+  <meta name="twitter:card" content="summary" />
+  <meta property="twitter:title" content="欽ちゃんの仮装大賞 パネル再現ツール" />
+  <script type="application/ld+json">
+{"@type":"WebSite","headline":"欽ちゃんの仮装大賞 パネル再現ツール","url":"https://kinchan.toriiico.com/","description":"欽ちゃんの仮装大賞で使われていたパネルをwebアプリのツールとして再現してみました。操作方法は A S D キーでカウントアップ、R キーでリセットできます。ヘルプボタンからスマホ向けのボタンを表示する機能がありますので、スマホユーザーの方はそちらのボタンを利用して楽しんでください。","name":"欽ちゃんの仮装大賞 パネル再現ツール","@context":"https://schema.org"}</script>
+  <!-- End Jekyll SEO tag -->
+
+  <meta name="google-site-verification" content="RQYJAQf6uF3vi9UBFIQD6RwHULMrepWFIdvZ8loP98Q" />
+  <meta name="msvalidate.01" content="EDA3D87587378806B700682F199251FC" />
+</head>
+
+<body>
+
+  <body>
+    <nav class="navbar is-warning" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand is-vertical-center">
+        <h1 class="title is-4" style="margin: 0 12px 0 12px;">
+          欽ちゃんの仮装大賞パネル 再現アプリ
+        </h1>
+        <button id="help" class="button is-primary">
+          <i class="far fa-question-circle"></i>
+        </button>
+        <button id="show-helper-buttons" class="button" style="margin-left: 10px;">
+          <i class="fas fa-gamepad"></i>
+        </button>
+        <button id="start-to-play-sound" class="button is-primary">
+          <i class="fas fa-volume-up"></i>
+        </button>
+      </div>
+    </nav>
+
+    <section id="progress-section" class="section">
+      <div class="container is-center">
+        <div class="is-mobile">
+          <progress class="progress is-primary" max="100"></progress>
+        </div>
+      </div>
+    </section>
+
+    <section id="main-section" class="section">
+      <div class="container is-center">
+        <div class="columns is-mobile">
+          <div class="column" style="position: relative;">
+            <div style="bottom: 0; position: absolute;"></div>
+          </div>
+          <div class="canvas-wrapper">
+            <canvas id="contentMain" width="160" height="720"></canvas>
+            <canvas id="contentFrameAnim" width="160" height="720"></canvas>
+          </div>
+          <div class="column">
+            <div id="helper-buttons" class="is-hide">
+              <div style="margin-bottom: 30px;">
+                <button id="reset" class="button">リセット</button>
+              </div>
+              <div style="margin-bottom: 30px;">
+                <button id="increment" class="button is-primary">加点</button>
+              </div>
+              <div>
+                <div>音量</div>
+                <input type="range" min="0" max="10" value="5" class="slider" id="volumeRange" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="modal">
+      <div class="modal-background"></div>
+      <div class="modal-content">
+        <div class="notification">
+          操作方法
+          <br />
+          加点：A S D Space キー
+          <br />
+          リセット：R キー
+          <br />
+          v0.0.6
+        </div>
+      </div>
+    </div>
+
+    <script>
+      "use strict"
+      const WIDTH = 160
+      const HEIGHT = 720
+      const DEFAULT_SE_VOLUME = 0.5 // 0.0 ~ 1.0
+
+      const wsurl = new URL(window.location.href)
+      const wsport = 8080
+
+      class PanelManager {
+        constructor(context, contextFrameAnim) {
+          this.context = context
+          this.count = 0
+          this.frameAnim = {
+            context: contextFrameAnim,
+            step: 0,
+            maxStep: 6,
+          }
+          this.failTimer = {
+            instance: null,
+            limit: 3000,
+          }
+          this.isLoadedSE = false // iPhoneなどリソース読み込みに一部制限があるもの向け
+
+          this.imgs = {
+            bg: {
+              instance: new Image(),
+              path: "img/base.png",
+            },
+            numbers: [
+              { instance: new Image(), path: "img/1.png" },
+              { instance: new Image(), path: "img/2.png" },
+              { instance: new Image(), path: "img/3.png" },
+              { instance: new Image(), path: "img/4.png" },
+              { instance: new Image(), path: "img/5.png" },
+              { instance: new Image(), path: "img/6.png" },
+              { instance: new Image(), path: "img/7.png" },
+              { instance: new Image(), path: "img/8.png" },
+              { instance: new Image(), path: "img/9.png" },
+              { instance: new Image(), path: "img/10.png" },
+              { instance: new Image(), path: "img/11.png" },
+              { instance: new Image(), path: "img/12.png" },
+              { instance: new Image(), path: "img/13.png" },
+              { instance: new Image(), path: "img/14.png" },
+              { instance: new Image(), path: "img/15.png" },
+              { instance: new Image(), path: "img/16.png" },
+              { instance: new Image(), path: "img/17.png" },
+              { instance: new Image(), path: "img/18.png" },
+              { instance: new Image(), path: "img/19.png" },
+              { instance: new Image(), path: "img/20.png" },
+            ],
+            frameAnim: {
+              instance: new Image(),
+              path: "img/kira_sprites.png",
+            },
+          }
+          this.se = {
+            numbers: [
+              new Audio("se/1.mp3"),
+              new Audio("se/2.mp3"),
+              new Audio("se/3.mp3"),
+              new Audio("se/4.mp3"),
+              new Audio("se/5.mp3"),
+              new Audio("se/6.mp3"),
+              new Audio("se/7.mp3"),
+              new Audio("se/8.mp3"),
+              new Audio("se/9.mp3"),
+              new Audio("se/10.mp3"),
+              new Audio("se/11.mp3"),
+              new Audio("se/12.mp3"),
+              new Audio("se/13.mp3"),
+              new Audio("se/14.mp3"),
+              new Audio("se/15.mp3"),
+              new Audio("se/16.mp3"),
+              new Audio("se/17.mp3"),
+              new Audio("se/18.mp3"),
+              new Audio("se/19.mp3"),
+              new Audio("se/20.mp3"),
+            ],
+            clear: new Audio("se/clear.mp3"),
+            fail: new Audio("se/fail.mp3"),
+          }
+
+          this.changeVolume(DEFAULT_SE_VOLUME)
+
+          this.preloadSE()
+          this.preloadImages()
+
+          this.drawBg()
+        }
+
+        preloadImages() {
+          const drawList = [this.imgs.bg, this.imgs.frameAnim, ...this.imgs.numbers]
+          let loadedCount = 0
+
+          drawList.map((img) => {
+            img.instance.onload = () => {
+              loadedCount++
+              if (loadedCount >= drawList.length) {
+                this.preloadSuccess()
+              }
+            }
+            img.instance.src = img.path
+          })
+        }
+
+        preloadSE() {
+          const seList = [this.se.clear, this.se.fail, ...this.se.numbers]
+          seList.map((se) => {
+            se.load()
+          })
+        }
+
+        preloadSuccess() {
+          this.showContentDOM()
+          this.drawBg()
+        }
+
+        showContentDOM() {
+          document.getElementById("progress-section").classList.add("is-hide")
+          document.getElementById("main-section").classList.remove("is-hide")
+        }
+
+        clearSE() {
+          this.se.clear.pause()
+          this.se.clear.currentTime = 0
+          this.se.fail.pause()
+          this.se.fail.currentTime = 0
+
+          for (let i; i < this.se.numbers.length; i++) {
+            this.se.numbers[i].pause()
+            this.se.numbers[i].currentTime = 0
+          }
+          clearTimeout(this.failTimer.instance)
+        }
+
+        reset() {
+          this.clearSE()
+          this.clearAllCanvas()
+          clearInterval(this.frameAnim.instance)
+          this.count = 0
+          this.frameAnim.step = 0
+
+          this.drawBg()
+          ws.send('reset')
+        }
+
+        getCount() {
+          return this.count
+        }
+
+        increment() {
+          if (this.count >= 20) {
+            return
+          }
+
+          this.count++
+
+          // サウンド再生
+          this.se.numbers[this.count - 1].play()
+
+          // 画像配置
+          this.drawNowCount()
+
+          // 15点以上で合格サウンド
+          if (this.count == 15) {
+            this.se.fail.pause()
+            this.se.fail.currentTime = 0
+            this.se.clear.play()
+            this.playFrameAnim()
+          }
+
+          // 残念サウンド
+          clearTimeout(this.failTimer.instance)
+          if (this.count < 15) {
+            this.failTimer.instance = setTimeout(() => {
+              this.se.fail.play()
+            }, this.failTimer.limit)
+          }
+        }
+
+        draw(imgInstance) {
+          this.context.drawImage(imgInstance, 0, 0, WIDTH, HEIGHT)
+        }
+
+        drawBg() {
+          this.draw(this.imgs.bg.instance)
+        }
+
+        drawNowCount() {
+          this.draw(this.imgs.numbers[this.count - 1].instance)
+        }
+
+        drawCount(count) {
+          this.draw(this.imgs.numbers[count - 1].instance)
+        }
+
+        drawFrameAnim() {
+          this.frameAnim.context.drawImage(
+            this.imgs.frameAnim.instance,
+            WIDTH * this.frameAnim.step,
+            0,
+            WIDTH,
+            HEIGHT,
+            0,
+            0,
+            WIDTH,
+            HEIGHT
+          )
+        }
+
+        clearAllCanvas() {
+          this.clearMainCanvas()
+          this.clearFrameAnimCanvas()
+        }
+
+        clearMainCanvas() {
+          this.context.clearRect(0, 0, WIDTH, HEIGHT)
+        }
+
+        clearFrameAnimCanvas() {
+          this.frameAnim.context.clearRect(0, 0, WIDTH, HEIGHT)
+        }
+
+        playFrameAnim() {
+          this.frameAnim.instance = setInterval(() => {
+            this.clearFrameAnimCanvas()
+            this.drawFrameAnim()
+
+            if (this.frameAnim.step >= this.frameAnim.maxStep) {
+              this.frameAnim.step = 1
+            } else {
+              this.frameAnim.step++
+            }
+          }, 50)
+        }
+
+        /**
+         * @param {number} value - 0.0 ~ 1.0
+         */
+        changeVolume(value) {
+          this.se.numbers.forEach((_, i) => {
+            this.se.numbers[i].volume = value
+          })
+          this.se.clear.volume = value
+          this.se.fail.volume = value
+        }
+      }
+
+      window.onload = () => {
+        const context = document.getElementById("contentMain").getContext("2d")
+        const contextFrameAnim = document.getElementById("contentFrameAnim").getContext("2d")
+        const pm = new PanelManager(context, contextFrameAnim)
+
+        document.addEventListener("keydown", (e) => {
+          e.preventDefault()
+
+          // key A, S, D
+          const keys = [65, 83, 68]
+
+          switch (e.keyCode) {
+            case 65: // 'A' key
+            case 83: // 'S' key
+            case 68: // 'D' key
+            case 32: // 'Space' key
+              pm.increment()
+              break
+            case 82: // 'R' key
+              pm.reset()
+              break
+            case 77: // 'M' key
+              pm.changeVolume(0)
+              break
+            default:
+              break
+          }
+        })
+
+        const ws = new WebSocket("ws://" + wsurl.hostname + ":" + wsport + "/")
+        ws.addEventListener("open", function (event) {
+          ws.send('scoreboard')
+        })
+        ws.addEventListener("message", function (event) {
+          if (event.data == 'reset') {
+            pm.reset()
+          } else if (event.data == 'increment') {
+            document.getElementById("increment").onclick()
+          }
+        })
+
+        // modal
+        document.getElementById("help").onclick = () => {
+          document.getElementsByClassName("modal")[0].classList.add("is-active")
+        }
+
+        document.getElementsByClassName("modal-background")[0].onclick = () => {
+          document.getElementsByClassName("modal")[0].classList.remove("is-active")
+        }
+
+        // start to play sound
+        document.getElementById("start-to-play-sound").onclick = () => {
+          pm.preloadSE()
+          pm.isLoadedSE = true
+          pm.se.clear.play()
+        }
+
+        // show helper buttons
+        document.getElementById("show-helper-buttons").onclick = () => {
+          // NOTE: iPhoneはイベント中でしかload, playを受け付けないため、事前load用の処理
+          if (!pm.isLoadedSE) {
+            pm.preloadSE()
+            pm.isLoadedSE = true
+          }
+
+          const hideClassName = "is-hide"
+          const helperButtons = document.getElementById("helper-buttons")
+
+          if (helperButtons.classList.contains(hideClassName)) {
+            helperButtons.classList.remove(hideClassName)
+          } else {
+            helperButtons.classList.add(hideClassName)
+          }
+        }
+
+        // events.
+        document.getElementById("increment").onclick = (e) => {
+          pm.increment()
+          e.currentTarget.blur()
+        }
+        document.getElementById("reset").onclick = (e) => {
+          pm.reset()
+          e.currentTarget.blur()
+        }
+        document.getElementById("volumeRange").onchange = (e) => {
+          const volume = e.target.value * 0.1
+          pm.changeVolume(volume)
+        }
+      }
+      const showContent = () => {
+        document.getElementById("progress-section").classList.add("is-hide")
+        document.getElementById("main-section").classList.remove("is-hide")
+      }
+    </script>
+  </body>
+
+</body>
+
+</html>
