@@ -282,14 +282,13 @@
         }
 
         reset() {
+          this.count = 0
           this.clearSE()
           this.clearAllCanvas()
           clearInterval(this.frameAnim.instance)
-          this.count = 0
           this.frameAnim.step = 0
 
           this.drawBg()
-          ws.send('reset')
         }
 
         getCount() {

@@ -20,7 +20,7 @@ serve({
 const max_score = 20
 
 // 1人が投票できる最大数
-const max_vote_by_user = 20
+const max_vote_by_user = 5
 
 // 投票リスト
 const vote_list: string[] = []
@@ -102,7 +102,7 @@ wss.on('connection', function connection(ws: WebSocket) {
         console.log(`reset`)
         // スコアボードにresetを送る
         wss.clients.forEach(function each(client) {
-          if (client.readyState === WebSocket.OPEN && client.id == scoreboard_id) {
+          if (client.readyState === WebSocket.OPEN) {
             client.send(`reset`)
           }
         })

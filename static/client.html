@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+
+<!--
+
+  欽ちゃんの仮装大賞　パネル再現アプリ WebSocket版 クライアント
+  by: ytnobody
+
+-->
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#157878">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.5/css/bulma.min.css" />
+  <title>審査員用ボタン</title>
+</head>
+
+<body>
+  <section class="section">
+    <h1 class="title">審査員用ボタン</h1>
+    <div class="block message">
+      <p>クライアントID=<span id="client-id"></span></p>
+    </div> 
+    <div class="block">
+      <button id="button" class="button is-primary">+1</button>
+    </div>
+  </section> 
+  <script>
+    // WebSocketサーバのURL
+    const wsUrl = location.protocol.replace('http', 'ws') + '//' + location.hostname + ':8080';
+
+    // client id
+    let clientId = null;
+
+    // WebSocketへの接続を2秒おきに確認し、接続が切れていたら再接続する
+    function connect() {
+      const ws = new WebSocket(wsUrl);
+      ws.onopen = () => {
+        console.log('WebSocket connected');
+      };
+      ws.onclose = () => {
+        console.log('WebSocket disconnected');
+        setTimeout(connect, 2000);
+      };
+      ws.onerror = (e) => {
+        console.error('WebSocket error:', e);
+        ws.close();
+      };
+      ws.onmessage = (e) => {
+        console.log('WebSocket message:', e.data);
+        // "code:"で始まるメッセージを受信したら、その後ろの値をclient idとして保持する
+        if (e.data.startsWith('code:')) {
+          clientId = e.data.slice(5);
+          console.log('client id:', clientId);
+          document.getElementById('client-id').textContent = clientId;
+        }
+      };
+      return ws;
+    }
+
+    // WebSocketへの接続を確立する
+    const ws = connect();
+
+    // ボタンがクリックされたら、WebSocketを介して+1を送信する
+    document.getElementById('button').addEventListener('click', () => {
+      if (clientId) {
+        ws.send(`${clientId}`);
+      }
+    });
+  </script>
+</body>
