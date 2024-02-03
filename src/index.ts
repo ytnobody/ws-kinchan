@@ -88,7 +88,7 @@ wss.on('connection', function connection(ws: WebSocket) {
           console.log(`vote: ${ws.id}`)
           console.log(`score: ${vote_list.length}`)
           // ブロードキャストメッセージを送信
-          wss.clients.forEach(function each(client) {
+          wss.clients.forEach(function each(client: { readyState: any; send: (arg0: string) => void }) {
             if (client.readyState === WebSocket.OPEN) {
               client.send(`increment`)
             }
@@ -101,7 +101,7 @@ wss.on('connection', function connection(ws: WebSocket) {
         vote_list.length = 0
         console.log(`reset`)
         // スコアボードにresetを送る
-        wss.clients.forEach(function each(client) {
+        wss.clients.forEach(function each(client: { readyState: any; send: (arg0: string) => void }) {
           if (client.readyState === WebSocket.OPEN) {
             client.send(`reset`)
           }
