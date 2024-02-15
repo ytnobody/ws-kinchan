@@ -1,18 +1,33 @@
+# 欽ちゃんの仮装大賞パネル 再現アプリ WebSocket対応版
+
+オリジナルは https://kinchan.toriiico.com/
+
+## 謝辞および免責事項
+
+オリジナルについては https://kinchan.toriiico.com/ の作者にその権利が帰属します。
+
+@ytnobodyはWebSocket対応版について作成しましたが、WebSocket対応版についてもオリジナルをコピー・改変したものとなりますので、オリジナルのライセンス如何によっては公開・利用に関する制約を受ける可能性が生じ得ます。
+
+当ドキュメント執筆時点(2024-02-15)ではオリジナルのライセンスについては記載なしのため、MITライセンスに相当するものと仮定しておりますが、オリジナルのライセンスが明確化した暁には、基本的にはその内容に従う前提です。
+
+## 依存パッケージのインストールと起動
+
 ```
 pnpm install
 pnpm start
 ```
 
+## 待ち受けポート番号
 
 ```
-static:
+Webサイト:
 http://localhost:8000
 
 websocket:
 ws://localhost:8080
 ```
 
-## protocol on websocket
+## websocket上のイベント
 
 ### code
 
@@ -20,8 +35,8 @@ ws://localhost:8080
 code:[SOME_CODE]
 ```
 
-- The WebSocket server issues the code necessary for voting when a client connects.
-- The client needs to use this code for voting, so this code needs to be saved for that purpose.
+- websocketサーバはクライアントの接続ごとに一意なコードを払い出します。
+- クライアントはこのコードを、投票のために保存する必要があります。
 
 ### vote
 
@@ -29,8 +44,8 @@ code:[SOME_CODE]
 [SOME_CODE]
 ```
 
-- The client sends the code to the WebSocket server.
-- The WebSocket server receives the code and counts the vote.
+- クライアントは自身が保存しているコードを送信することで1票を投票できます。
+- websocketサーバはコードを受け取り、その票数をカウントします。
 
 ### increment
 
@@ -38,8 +53,8 @@ code:[SOME_CODE]
 increment
 ```
 
-- The WebSocket server sends `increment` as a broadcast to all clients.
-- The Scoreboard client receives `increment` and increments the score.
+- websocketサーバは得票数を加算するたびに `increment` をすべてのクライアントに送信します。
+- スコアボードクライアントは `increment` を受け取ると、スコアボード内のスコアを加算します。
 
 ### scoreboard
 
@@ -47,8 +62,8 @@ increment
 scoreboard
 ```
 
-- The Scoreboard client sends `scoreboard` to the WebSocket server when it connects.
-- The WebSocket server keeps client id of the Scoreboard client.
+- スコアボードクライアントはwebsocketサーバへの接続後に `scoreboard` を送ります。
+- websocketサーバは `scoreboard` を送ってきたクライアントのIDを記録し、スコアボードクライアントとして識別します。
 
 ### reset
 
@@ -56,15 +71,15 @@ scoreboard
 reset
 ```
 
-- The WebSocket server receives `reset` and resets the score.
-- The WebSocket server sends `reset` to the Scoreboard client.
+- websocketサーバは `reset` を受け取ると得票数を0にします。
+- websocketサーバは得票数を0にするときに `reset` をスコアボードクライアントに送ります。
 
 
-## components
+## コンポーネント
 
 ```mermaid
 flowchart TD
-    A[Scoreboard] -->|send:scoreboard| B[WebSocker Server]
-    C[Client Button] -->|send: CODE| B
+    A[スコアボードクライアント] -->|send:scoreboard| B[websocketサーバ]
+    C[クライアント] -->|send: CODE| B
 
 ```
