@@ -16,5 +16,5 @@ serve({
 // WebSocketサーバーを起動
 KinchanWSS.run({
   port: 8080,
-  max_vote_by_user: 2
+  max_vote_by_user: 10
 })

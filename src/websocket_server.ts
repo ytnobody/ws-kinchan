@@ -44,11 +44,16 @@ export class KinchanWSS {
       return connection_list.find(conn => conn.id === id)
     }
 
+    // msミリ秒後に解決されるPromiseを返す
+    async function sleep(ms: number): Promise<void> {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+  
     // サーバー起動時にログを出力
     wss.on('listening', () => console.log(`websocket listening on port ${port}`))
 
     // 接続時の処理
-    wss.on('connection', function connection(ws: WebSocket) {
+    wss.on('connection', async function connection(ws: WebSocket) {
 
       // 接続時にIDを発行
       const id = ulid()
@@ -58,7 +63,7 @@ export class KinchanWSS {
         id,
         ws
       }
-
+    
       // 接続時にログを出力
       console.log(`connected: ${id}`)
 
@@ -101,7 +106,7 @@ export class KinchanWSS {
           return
         }
 
-        // スコアボードIDを設定\
+        // スコアボードIDを設定
         if (data.toString() == 'scoreboard') {
           scoreboard_id = conn_id
           console.log(`scoreboard: ${conn_id}`)
@@ -134,6 +139,12 @@ export class KinchanWSS {
               client.send(`reset`)
             }
           })
+        }
+
+        // クライアントID問い合わせ
+        else if (data.toString() == 'query') {
+          console.log(`query: ${conn_id}`)
+          ws.send(`${conn_id}`)
         }
       })
 
