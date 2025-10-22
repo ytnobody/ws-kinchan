@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon"
+    "start": "ts-node -r esbuild-register ./src/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +20,6 @@
   },
   "devDependencies": {
     "@types/ws": "^8.5.10",
-    "nodemon": "^3.0.1",
     "ts-node": "^10.9.2"
   }
 }
