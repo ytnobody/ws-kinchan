@@ -16,7 +16,7 @@
     "hono": "^4.10.2",
     "serve-static": "link:@hono/node-server/serve-static",
     "ulid": "^2.3.0",
-    "ws": "^8.14.2"
+    "ws": "^8.17.1"
   },
   "devDependencies": {
     "@types/ws": "^8.5.10",
